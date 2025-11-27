@@ -1,9 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 
 // Charger les variables d'environnement
+dotenv.config();
+
+// Créer l'application Express
+const app = express();
+
+// Middleware
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // URL dynamique (Prod ou Dev)
+    credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Connexion à MongoDB
+mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ Connecté à MongoDB'))
     .catch(err => console.error('❌ Erreur MongoDB:', err));
 
