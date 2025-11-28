@@ -9,11 +9,24 @@ dotenv.config();
 // Créer l'application Express
 const app = express();
 
-// Middleware
+// Middleware - CORS configuration
+const allowedOrigins = [
+    'http://localhost:5173', // Dev local
+    'https://riftbound-manager.vercel.app', // Production Vercel
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // URL dynamique (Prod ou Dev)
+    origin: (origin, callback) => {
+        // Autoriser les requêtes sans origin (comme Postman) ou depuis localhost/Vercel
+        if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
